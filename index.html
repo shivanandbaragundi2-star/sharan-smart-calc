@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHARAN SMART CALCULATOR</title>
+<style>
+:root{
+ --bg:#080b18;--panel:#11182b;--card:#17213a;
+ --text:#f4f5ff;--muted:#9aa8c7;
+ --a:#8c65ff;--b:#00d9ff;--line:#293552;
+}
+.light{
+ --bg:#f1f3fb;--panel:#fff;--card:#e8ecf8;
+ --text:#18203a;--muted:#63708e;
+ --line:#d5dced;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;transition:.3s;
+}
+header{
+ padding:20px;background:linear-gradient(120deg,#27145e,#104a70);
+ position:sticky;top:0;z-index:5;
+ border-bottom:1px solid #51458c;
+}
+.logo{font-size:21px;font-weight:900;letter-spacing:1px}
+.logo span{color:#48e6ff}
+.sub{font-size:11px;color:#c4d9ff;margin-top:5px}
+.top{display:flex;justify-content:space-between;align-items:center}
+button,select,input{
+ font:inherit;border:0;border-radius:12px;padding:12px;
+}
+button{cursor:pointer;color:white;background:var(--a)}
+.theme{background:#ffffff20;border:1px solid #ffffff44}
+nav{
+ display:flex;gap:8px;overflow-x:auto;padding:12px;
+ background:var(--panel);position:sticky;top:75px;z-index:4;
+}
+nav button{white-space:nowrap;background:var(--card);color:var(--text);font-size:12px}
+nav button.active{background:linear-gradient(120deg,var(--a),#00a9d8);color:white}
+main{max-width:850px;margin:auto;padding:14px}
+.page{display:none}
+.page.active{display:block}
+.card{
+ background:var(--panel);border:1px solid var(--line);
+ padding:16px;border-radius:20px;margin-bottom:14px;
+ box-shadow:0 8px 25px #00000016;
+}
+h2{font-size:19px;margin:0 0 15px}
+h3{font-size:14px;color:var(--b)}
+input,select{
+ width:100%;background:var(--card);color:var(--text);
+ border:1px solid var(--line);margin:5px 0 10px;
+}
+button:active{transform:scale(.97)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.result{
+ background:var(--card);border:1px solid var(--line);
+ padding:14px;border-radius:13px;margin-top:10px;
+ overflow-wrap:anywhere;
+}
+.big{font-size:27px;font-weight:bold;color:var(--b)}
+.small{font-size:12px;color:var(--muted)}
+.calc-display{
+ background:#050916;color:#fff;padding:20px;
+ border-radius:16px;text-align:right;margin-bottom:12px;
+ min-height:95px;overflow-wrap:anywhere;
+}
+#screen{font-size:29px;min-height:38px}
+#previous{font-size:12px;color:#8d9ab8;min-height:20px}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.keys button{font-size:17px;padding:17px 4px;background:#202c49}
+.keys .op{background:#45317d}
+.keys .equal{background:linear-gradient(120deg,#00a9cf,#6255e8)}
+.keys .clear{background:#a83258}
+.keys .wide{grid-column:span 2}
+.action{width:100%;margin-top:7px}
+.item{
+ padding:12px;border-bottom:1px solid var(--line);
+ display:flex;justify-content:space-between;gap:8px;
+}
+.item button{padding:7px 10px}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+canvas{width:100%;background:#080e20;border-radius:12px}
+label{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+ <div class="top">
+  <div>
+   <div class="logo">SHARAN <span>SMART</span></div>
+   <div class="sub">CALCULATOR • V3 EDITION</div>
+  </div>
+  <button class="theme" onclick="toggleTheme()">☀ / ☾</button>
+ </div>
+</header>
+
+<nav id="nav">
+ <button class="active" onclick="show('home',this)">Calculator</button>
+ <button onclick="show('scientific',this)">Scientific</button>
+ <button onclick="show('assistant',this)">Math Help</button>
+ <button onclick="show('equation',this)">Equation</button>
+ <button onclick="show('finance',this)">Finance</button>
+ <button onclick="show('converter',this)">Converter</button>
+ <button onclick="show('statistics',this)">Statistics</button>
+ <button onclick="show('matrix',this)">Matrix</button>
+ <button onclick="show('graph',this)">Graph</button>
+ <button onclick="show('quiz',this)">Quiz</button>
+ <button onclick="show('formulas',this)">Formulas</button>
+ <button onclick="show('history',this)">History</button>
+ <button onclick="show('number',this)">Number System</button>
+</nav>
+
+<main>
+<section id="home" class="page active">
+ <div class="card">
+  <h2>⚡ Smart Calculator</h2>
+  <div class="calc-display">
+   <div id="previous"></div>
+   <div id="screen">0</div>
+  </div>
+  <div class="keys" id="keys"></div>
+  <div class="grid3" style="margin-top:10px">
+   <button onclick="memory('add')">M+</button>
+   <button onclick="memory('recall')">MR</button>
+   <button onclick="memory('clear')">MC</button>
+  </div>
+  <button class="action" onclick="copyResult()">Copy Result</button>
+ </div>
+ <div class="card">
+  <h3>Quick Tools</h3>
+  <div class="grid">
+   <button onclick="quick('sqrt')">√ Square Root</button>
+   <button onclick="quick('square')">x² Square</button>
+   <button onclick="quick('percent')">Percentage</button>
+   <button onclick="quick('factorial')">Factorial</button>
+  </div>
+ </div>
+</section>
+
+<section id="scientific" class="page">
+ <div class="card">
+  <h2>🔬 Scientific Calculator</h2>
+  <label>Expression (angles in radians)</label>
+  <input id="sci" placeholder="sin(1) + sqrt(25)">
+  <div class="grid">
+   <button onclick="sciInsert('sin(')">sin</button>
+   <button onclick="sciInsert('cos(')">cos</button>
+   <button onclick="sciInsert('tan(')">tan</button>
+   <button onclick="sciInsert('sqrt(')">√</button>
+   <button onclick="sciInsert('log(')">log</button>
+   <button onclick="sciInsert('ln(')">ln</button>
+   <button onclick="sciInsert('PI')">π</button>
+   <button onclick="sciInsert('^')">Power</button>
+  </div>
+  <button class="action" onclick="solveSci()">Calculate</button>
+  <div id="sciResult" class="result">Result appears here</div>
+ </div>
+</section>
+
+<section id="assistant" class="page">
+ <div class="card">
+  <h2>🧠 Smart Math Help</h2>
+  <p class="small">Ask a basic calculation question.</p>
+  <input id="ask" placeholder="Example: What is 20% of 500?">
+  <button class="action" onclick="askMath()">Get Answer</button>
+  <div id="answer" class="result">Your answer will appear here.</div>
+ </div>
+</section>
+
+<section id="equation" class="page">
+ <div class="card">
+  <h2>Equation Solver</h2>
+  <h3>Linear equation: ax + b = c</h3>
+  <div class="grid">
+   <input id="la" type="number" placeholder="a">
+   <input id="lb" type="number" placeholder="b">
+   <input id="lc" type="number" placeholder="c">
+  </div>
+  <button class="action" onclick="linear()">Solve Linear</button>
+  <div id="linearResult" class="result"></div>
+  <h3>Quadratic equation: ax² + bx + c = 0</h3>
+  <div class="grid">
+   <input id="qa" type="number" placeholder="a">
+   <input id="qb" type="number" placeholder="b">
+   <input id="qc" type="number" placeholder="c">
+  </div>
+  <button class="action" onclick="quadratic()">Solve Quadratic</button>
+  <div id="quadResult" class="result"></div>
+ </div>
+</section>
+
+<section id="finance" class="page">
+ <div class="card">
+  <h2>💰 Finance Calculator</h2>
+  <label>Amount (₹)</label><input id="amount" type="number">
+  <label>Percentage / Interest Rate (%)</label><input id="rate" type="number">
+  <label>Time (years, for interest)</label><input id="years" type="number" value="1">
+  <label>Discount (%)</label><input id="discount" type="number" value="0">
+  <div class="grid">
+   <button onclick="gst()">Add GST</button>
+   <button onclick="discountCalc()">Discount</button>
+   <button onclick="simple()">Simple Interest</button>
+   <button onclick="compound()">Compound Interest</button>
+   <button onclick="profit()">Profit / Loss</button>
+  </div>
+  <div id="financeResult" class="result"></div>
+ </div>
+</section>
+
+<section id="converter" class="page">
+ <div class="card">
+  <h2>📐 Unit Converter</h2>
+  <label>Value</label><input id="unitValue" type="number" value="1">
+  <label>Conversion</label>
+  <select id="unitType">
+   <option value="km">Kilometre → Metre</option>
+   <option value="m">Metre → Centimetre</option>
+   <option value="cm">Centimetre → Metre</option>
+   <option value="kg">Kilogram → Gram</option>
+   <option value="g">Gram → Kilogram</option>
+   <option value="hr">Hour → Minutes</option>
+   <option value="min">Minutes → Seconds</option>
+   <option value="c">Celsius → Fahrenheit</option>
+   <option value="f">Fahrenheit → Celsius</option>
+   <option value="mile">Mile → Kilometre</option>
+   <option value="inch">Inch → Centimetre</option>
+  </select>
+  <button class="action" onclick="convert()">Convert</button>
+  <div id="unitResult" class="result"></div>
+ </div>
+</section>
+
+<section id="statistics" class="page">
+ <div class="card">
+  <h2>📊 Statistics Calculator</h2>
+  <input id="data" placeholder="Example: 10,20,30,40,50">
+  <button class="action" onclick="stats()">Analyze Data</button>
+  <div id="statsResult" class="result"></div>
+ </div>
+</section>
+
+<section id="matrix" class="page">
+ <div class="card">
+  <h2>Matrix Determinant</h2>
+  <label>Choose matrix size</label>
+  <select id="matrixSize" onchange="matrixInputs()">
+   <option value="2">2 × 2</option>
+   <option value="3">3 × 3</option>
+  </select>
+  <div id="matrixFields" class="grid"></div>
+  <button class="action" onclick="matrixSolve()">Calculate Determinant</button>
+  <div id="matrixResult" class="result"></div>
+ </div>
+</section>
+
+<section id="graph" class="page">
+ <div class="card">
+  <h2>📈 Graph Plotter</h2>
+  <p class="small">Supported: x, sin(x), cos(x), sqrt(x), x^2, abs(x)</p>
+  <input id="graphExpr" placeholder="Example: x*x">
+  <button class="action" onclick="drawGraph()">Draw Graph</button>
+  <canvas id="plot" width="700" height="400"></canvas>
+ </div>
+</section>
+
+<section id="quiz" class="page">
+ <div class="card">
+  <h2>🏆 Smart Math Quiz</h2>
+  <div class="result">
+   <div class="big" id="quizScore">0 / 50</div>
+   <div class="small" id="quizProgress">Start a new quiz</div>
+  </div>
+  <div id="quizArea"></div>
+  <button class="action" onclick="newQuiz()">Start / New Quiz</button>
+  <button class="action" onclick="nextQuestion()" id="nextBtn" style="display:none">Next Question</button>
+ </div>
+</section>
+
+<section id="formulas" class="page">
+ <div class="card">
+  <h2>📚 Formula Library</h2>
+  <input id="formulaSearch" placeholder="Search formula..." oninput="showFormulas()">
+  <div id="formulaList"></div>
+ </div>
+</section>
+
+<section id="history" class="page">
+ <div class="card">
+  <h2>🕘 Calculation History</h2>
+  <button onclick="exportHistory()">Export CSV</button>
+  <button onclick="clearHistory()" style="background:#a83258">Clear History</button>
+  <div id="historyList"></div>
+ </div>
+</section>
+
+<section id="number" class="page">
+ <div class="card">
+  <h2>🔢 Number System Converter</h2>
+  <input id="numInput" type="number" placeholder="Enter whole number">
+  <button class="action" onclick="numberConvert()">Convert Number</button>
+  <div id="numberResult" class="result"></div>
+ </div>
+</section>
+</main>
+<footer>SHARAN SMART CALCULATOR • V3<br>Designed for learning and calculations</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+function show(id,btn){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ $(id).classList.add('active');
+ document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+ if(btn)btn.classList.add('active');
+}
+function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem('sharanTheme',document.body.classList.contains('light')?'light':'dark')}
+if(localStorage.getItem('sharanTheme')==='light')document.body.classList.add('light');
+
+let expr='',memoryValue=0,lastResult=0;
+const keys=['C','DEL','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','(',')','π','√','x²','='];
+const keybox=$('keys');
+keys.forEach(k=>{
+ let b=document.createElement('button');b.textContent=k;
+ if(['÷','×','−','+','%','π','√','x²'].includes(k))b.className='op';
+ if(k==='=')b.className='equal';
+ if(k==='C')b.className='clear';
+ b.onclick=()=>press(k);keybox.appendChild(b);
+});
+function display(){$('screen').textContent=expr||'0'}
+function press(k){
+ if(k==='C'){expr='';display();return}
+ if(k==='DEL'){expr=expr.slice(0,-1);display();return}
+ if(k==='='){calculate();return}
+ let map={'×':'*','÷':'/','−':'-','π':'PI','√':'sqrt(','x²':'^2'};
+ expr+=map[k]??k;display();
+}
+function safeCalc(s){
+ s=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\^/g,'**');
+ if(!/^[0-9+\-*/().,\sA-Za-z]*$/.test(s))throw Error('Invalid expression');
+ const allowed=['sin','cos','tan','sqrt','log','ln','abs','PI','E','pow','floor','ceil','round'];
+ const names=s.match(/[A-Za-z]+/g)||[];
+ if(names.some(n=>!allowed.includes(n)))throw Error('Unsupported function');
+ return Function('"use strict";const {sin,cos,tan,sqrt,log,abs,pow,floor,ceil,round}=Math;const ln=Math.log;const PI=Math.PI;const E=Math.E;return ('+s+')')();
+}
+function calculate(){
+ try{
+  let r=safeCalc(expr);if(!Number.isFinite(r))throw Error('Invalid result');
+  $('previous').textContent=expr+' =';
+  expr=String(Number(r.toPrecision(12)));lastResult=r;display();
+  saveHistory($('previous').textContent+' '+expr);
+ }catch(e){$('previous').textContent='Check your expression';}
+}
+function memory(type){
+ if(type==='clear')memoryValue=0;
+ if(type==='add')memoryValue+=Number(lastResult)||0;
+ if(type==='recall'){expr+=String(memoryValue);display()}
+}
+function quick(type){
+ let n=Number(prompt('Enter a number'));if(!Number.isFinite(n))return;
+ let r;
+ if(type==='sqrt')r=Math.sqrt(n);
+ if(type==='square')r=n*n;
+ if(type==='percent')r=n/100;
+ if(type==='factorial'){if(n<0||n>170||!Number.isInteger(n))return alert('Enter an integer from 0 to 170');r=1;for(let i=2;i<=n;i++)r*=i}
+ alert('Result: '+r);lastResult=r;saveHistory(type+' '+n+' = '+r);
+}
+function copyResult(){navigator.clipboard?.writeText(String(lastResult)).then(()=>alert('Copied')).catch(()=>alert('Result: '+lastResult))}
+function sciInsert(v){$('sci').value+=$('sci').value?' '+v:v}
+function solveSci(){
+ try{let r=safeCalc($('sci').value);$('sciResult').textContent=r;lastResult=r;saveHistory('Scientific: '+$('sci').value+' = '+r)}
+ catch(e){$('sciResult').textContent='Invalid expression'}
+}
+function askMath(){
+ let q=$('ask').value.toLowerCase(),r='';
+ let p=q.match(/([\d.]+)\s*%\s*of\s*([\d.]+)/);
+ let sq=q.match(/(?:sqrt|square root)\s*(?:of)?\s*([\d.]+)/);
+ let m=q.match(/([\d.]+)\s*([+\-*/x×])\s*([\d.]+)/);
+ if(p)r=Number(p[1])*Number(p[2])/100;
+ else if(sq)r=Math.sqrt(Number(sq[1]));
+ else if(m){let a=+m[1],b=+m[3],op=m[2];r=op==='+'?a+b:op==='-'?a-b:op==='/'?a/b:a*b}
+ else if(q.includes('area')&&q.includes('rectangle'))r='Rectangle area = length × breadth';
+ else if(q.includes('pythagoras'))r='a² + b² = c²';
+ else if(q.includes('mean'))r='Mean = sum of values ÷ number of values';
+ else r='Try: 20% of 500, sqrt 144, or 25 + 30';
+ $('answer').textContent='Answer: '+r;
+}
+function val(id){return Number($(id).value)}
+function linear(){
+ let a=val('la'),b=val('lb'),c=val('lc');
+ $('linearResult').textContent=a===0?(b===c?'Infinite solutions':'No solution'):'x = '+((c-b)/a);
+}
+function quadratic(){
+ let a=val('qa'),b=val('qb'),c=val('qc');
+ if(a===0){$('quadResult').textContent='a cannot be zero';return}
+ let d=b*b-4*a*c;
+ $('quadResult').textContent=d<0?'No real roots':d===0?'One root: '+(-b/(2*a)):'Roots: '+((-b+Math.sqrt(d))/(2*a))+' and '+((-b-Math.sqrt(d))/(2*a));
+}
+function financeResult(s){$('financeResult').textContent=s}
+function gst(){
+ let a=val('amount'),r=val('rate'),t=a*r/100;
+ financeResult('GST: ₹'+t.toFixed(2)+' | Total: ₹'+(a+t).toFixed(2));
+}
+function discountCalc(){
+ let a=val('amount'),r=val('discount'),d=a*r/100;
+ financeResult('Discount: ₹'+d.toFixed(2)+' | Final price: ₹'+(a-d).toFixed(2));
+}
+function simple(){
+ let p=val('amount'),r=val('rate'),t=val('years'),i=p*r*t/100;
+ financeResult('Interest: ₹'+i.toFixed(2)+' | Total: ₹'+(p+i).toFixed(2));
+}
+function compound(){
+ let p=val('amount'),r=val('rate'),t=val('years'),a=p*Math.pow(1+r/100,t);
+ financeResult('Total: ₹'+a.toFixed(2)+' | Interest: ₹'+(a-p).toFixed(2));
+}
+function profit(){
+ let cost=Number(prompt('Enter cost price')),sell=Number(prompt('Enter selling price'));
+ if(!Number.isFinite(cost)||!Number.isFinite(sell)||cost<=0)return;
+ financeResult(sell>=cost?'Profit: ₹'+(sell-cost)+' ('+((sell-cost)/cost*100).toFixed(2)+'%)':'Loss: ₹'+(cost-sell)+' ('+((cost-sell)/cost*100).toFixed(2)+'%)');
+}
+function convert(){
+ let n=val('unitValue'),t=$('unitType').value,r;
+ let f={km:n=>n*1000,m:n=>n*100,cm:n=>n/100,kg:n=>n*1000,g:n=>n/1000,hr:n=>n*60,min:n=>n*60,c:n=>n*9/5+32,f:n=>(n-32)*5/9,mile:n=>n*1.609344,inch:n=>n*2.54};
+ r=f[t](n);$('unitResult').textContent='Result: '+r;
+}
+function stats(){
+ let a=$('data').value.split(',').map(Number);
+ if(a.length<1||a.some(n=>!Number.isFinite(n))){$('statsResult').textContent='Enter valid comma-separated numbers';return}
+ let sorted=[...a].sort((x,y)=>x-y),mean=a.reduce((x,y)=>x+y,0)/a.length;
+ let mid=Math.floor(sorted.length/2),median=sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+ let freq={};a.forEach(n=>freq[n]=(freq[n]||0)+1);
+ let max=Math.max(...Object.values(freq)),modes=Object.keys(freq).filter(k=>freq[k]===max);
+ let variance=a.reduce((s,n)=>s+(n-mean)**2,0)/a.length;
+ $('statsResult').innerHTML='Count: '+a.length+'<br>Sum: '+a.reduce((x,y)=>x+y,0)+'<br>Mean: '+mean+'<br>Median: '+median+'<br>Mode: '+(max===1?'No mode':modes.join(', '))+'<br>Range: '+(sorted.at(-1)-sorted[0])+'<br>Population SD: '+Math.sqrt(variance).toFixed(4);
+}
+function matrixInputs(){
+ let n=+$('matrixSize').value;$('matrixFields').innerHTML='';
+ for(let i=0;i<n*n;i++){let x=document.createElement('input');x.type='number';x.placeholder='Value '+(i+1);x.id='mat'+i;$('matrixFields').appendChild(x)}
+}
+matrixInputs();
+function det(a){
+ if(a.length===1)return a[0][0];
+ if(a.length===2)return a[0][0]*a[1][1]-a[0][1]*a[1][0];
+ return a[0].reduce((s,v,j)=>s+(j%2?-1:1)*v*det(a.slice(1).map(row=>row.filter((_,k)=>k!==j))),0);
+}
+function matrixSolve(){
+ let n=+$('matrixSize').value,a=[];
+ for(let i=0;i<n;i++){a.push([]);for(let j=0;j<n;j++){let v=$('mat'+(i*n+j)).value;if(v==='')return $('matrixResult').textContent='Fill all values';a[i].push(+v)}}
+ $('matrixResult').textContent='Determinant = '+det(a);
+}
+function drawGraph(){
+ let c=$('plot'),ctx=c.getContext('2d'),e=$('graphExpr').value;
+ ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#394968';ctx.lineWidth=1;
+ ctx.beginPath();ctx.moveTo(0,200);ctx.lineTo(700,200);ctx.moveTo(350,0);ctx.lineTo(350,400);ctx.stroke();
+ ctx.strokeStyle='#00dcff';ctx.lineWidth=2;ctx.beginPath();
+ for(let px=0;px<700;px++){
+  let x=(px-350)/35,y;
+  try{y=safeCalc(e.replace(/\bx\b/g,'('+x+')'))}catch(err){return alert('Unsupported graph expression')}
+  let py=200-y*25;if(!Number.isFinite(py)||Math.abs(py)>2000){ctx.moveTo(px,py);continue}
+  if(px===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+ }
+ ctx.stroke();
+}
+const questions=[
+ ['12 × 8 = ?',96],['√144 = ?',12],['15% of 200 = ?',30],
+ ['9² = ?',81],['100 ÷ 4 = ?',25],['7 × 11 = ?',77],
+ ['Square root of 81?',9],['25 + 75 = ?',100],
+ ['12² = ?',144],['50% of 90 = ?',45],
+ ['3³ = ?',27],['144 ÷ 12 = ?',12],
+ ['18 + 22 = ?',40],['5 × 16 = ?',80],
+ ['20% of 500 = ?',100],['11² = ?',121],
+ ['64 ÷ 8 = ?',8],['30% of 300 = ?',90],
+ ['14 × 5 = ?',70],['√225 = ?',15]
+];
+let quiz=[],qi=0,score=0,answered=false;
+function newQuiz(){
+ quiz=[...questions].sort(()=>Math.random()-.5).slice(0,10);
+ qi=0;score=0;answered=false;showQuestion();
+}
+function showQuestion(){
+ $('quizScore').textContent=score+' / 50';
+ $('quizProgress').textContent='Question '+(qi+1)+' of 10';
+ let q=quiz[qi];
+ $('quizArea').innerHTML='<h3>'+q[0]+'</h3><input id="quizAnswer" type="number" placeholder="Your answer"><div id="quizFeedback" class="small"></div><button class="action" onclick="checkAnswer()">Submit Answer</button>';
+ $('nextBtn').style.display='none';
+}
+function checkAnswer(){
+ if(answered)return;let v=$('quizAnswer').value;
+ if(v==='')return;
+ answered=true;let correct=Number(v)===quiz[qi][1];
+ if(correct)score+=5;
+ $('quizFeedback').textContent=correct?'Correct! +5 marks':'Correct answer: '+quiz[qi][1];
+ $('quizScore').textContent=score+' / 50';
+ $('nextBtn').style.display='block';
+ $('quizArea').querySelector('button').disabled=true;
+}
+function nextQuestion(){
+ if(!answered)return;
+ qi++;answered=false;
+ if(qi>=10){$('quizArea').innerHTML='<h2>Quiz Completed!</h2><div class="big">'+score+' / 50</div><p>'+ (score>=40?'Excellent!':score>=25?'Good effort!':'Keep practising!')+'</p>'; $('quizProgress').textContent='Completed';$('nextBtn').style.display='none';return}
+ showQuestion();
+}
+const formulas=[
+ ['Area of square','side × side'],['Area of rectangle','length × breadth'],
+ ['Area of triangle','½ × base × height'],['Circle area','π × r²'],
+ ['Circle circumference','2 × π × r'],['Simple Interest','P × R × T / 100'],
+ ['Compound Amount','P(1 + R/100)^T'],['Speed','Distance / Time'],
+ ['Average','Sum / Count'],['Percentage','Value × Rate / 100'],
+ ['Pythagoras','a² + b² = c²'],['Quadratic equation','(-b ± √(b²-4ac)) / 2a'],
+ ['GST','Original price × GST rate / 100'],
+ ['Profit','Selling price − Cost price'],
+ ['Density','Mass / Volume']
+];
+function showFormulas(){
+ let q=$('formulaSearch').value.toLowerCase();
+ $('formulaList').innerHTML=formulas.filter(x=>(x[0]+x[1]).toLowerCase().includes(q)).map(x=>'<div class="item"><div><b>'+x[0]+'</b><br><span class="small">'+x[1]+'</span></div><button onclick="navigator.clipboard?.writeText('+JSON.stringify(x[1])+')">Copy</button></div>').join('');
+}
+showFormulas();
+function saveHistory(s){
+ let h=JSON.parse(localStorage.getItem('sharanHistory')||'[]');
+ h.unshift({text:s,time:new Date().toLocaleString()});
+ localStorage.setItem('sharanHistory',JSON.stringify(h.slice(0,100)));
+}
+function renderHistory(){
+ let h=JSON.parse(localStorage.getItem('sharanHistory')||'[]');
+ $('historyList').innerHTML=h.map(x=>'<div class="item"><div>'+x.text+'<br><span class="small">'+x.time+'</span></div></div>').join('')||'No history yet';
+}
+function clearHistory(){if(confirm('Clear all history?')){localStorage.removeItem('sharanHistory');renderHistory()}}
+function exportHistory(){
+ let h=JSON.parse(localStorage.getItem('sharanHistory')||'[]');
+ let csv='Calculation,Date\n'+h.map(x=>'"'+x.text.replace(/"/g,'""')+'","'+x.time+'"').join('\n');
+ let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='sharan-history.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function numberConvert(){
+ let n=Number($('numInput').value);
+ if(!Number.isSafeInteger(n))return $('numberResult').textContent='Enter a safe whole number';
+ $('numberResult').innerHTML='Binary: '+n.toString(2)+'<br>Octal: '+n.toString(8)+'<br>Decimal: '+n+'<br>Hexadecimal: '+n.toString(16).toUpperCase();
+}
+renderHistory();
+</script>
+</body>
+</html>
